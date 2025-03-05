@@ -4,6 +4,7 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
+  Request,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -13,6 +14,7 @@ import {
 } from '@nestjs/swagger';
 import { UserService } from 'modules/user/user.service';
 import { JwtAuthGuard } from 'libs/guards/jwt/jwt-auth.guard';
+import { UserDto } from 'libs/dto';
 
 @ApiTags('User Manager')
 @Controller('user')
@@ -25,11 +27,12 @@ export class UserController {
   })
   @ApiResponse({
     status: 200,
+    type: UserDto,
   })
   @UseGuards(JwtAuthGuard)
-  @Get('overview')
+  @Get('profile')
   @UsePipes(ValidationPipe)
-  async getOverview() {
-    return 'Hello world';
+  async getProfile(@Request() req: any) {
+    return this.userService.getUserById(req.user.id);
   }
 }

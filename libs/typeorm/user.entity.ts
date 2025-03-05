@@ -27,13 +27,6 @@ export class User extends Base {
   })
   password: string;
 
-  @ApiProperty()
-  @Column({
-    nullable: false,
-    default: '',
-  })
-  nationality: string;
-
   @ApiProperty({
     type: Profile,
   })
@@ -48,12 +41,4 @@ export class User extends Base {
     nullable: false,
   })
   isVerified: boolean;
-
-  @ApiProperty()
-  @Column({
-    type: String,
-    default: '',
-    nullable: false,
-  })
-  phoneNo: string;
 }

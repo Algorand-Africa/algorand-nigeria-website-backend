@@ -21,33 +21,6 @@ export class Profile extends BaseWithExclusion {
     nullable: true,
     type: String,
   })
-  githubUsername?: string;
-
-  @ApiProperty({
-    type: String,
-  })
-  @Column({
-    nullable: true,
-    type: String,
-  })
-  linkedInUrl?: string;
-
-  @ApiProperty({
-    type: String,
-  })
-  @Column({
-    nullable: true,
-    type: String,
-  })
-  behanceUrl?: string;
-
-  @ApiProperty({
-    type: String,
-  })
-  @Column({
-    nullable: true,
-    type: String,
-  })
   dob?: string;
 
   @ApiProperty({
@@ -68,15 +41,6 @@ export class Profile extends BaseWithExclusion {
     type: String,
   })
   imageKey: string;
-
-  @ApiProperty({
-    type: String,
-  })
-  @Column({
-    nullable: true,
-    type: String,
-  })
-  portfolio?: string;
 
   @ApiProperty()
   @Column({

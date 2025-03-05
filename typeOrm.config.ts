@@ -16,5 +16,8 @@ export default new DataSource({
   password: env.DB_PASSWORD as any,
   database: env.DB_NAME as any,
   entities,
+  ssl: {
+    rejectUnauthorized: false,
+  },
   migrations: [`migrations/*{.ts,.js}`],
 });

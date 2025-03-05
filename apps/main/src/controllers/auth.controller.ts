@@ -1,6 +1,14 @@
-import { Controller, Request, Post, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Request,
+  Post,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+  Body,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
-import { LogInDto, LogInResponseDto } from 'libs/dto';
+import { CreateUserDto, LogInDto, LogInResponseDto, UserDto } from 'libs/dto';
 import { LocalAuthGuard } from 'libs/guards/local/local-auth.guard';
 import { AuthService } from 'modules/auth/auth.service';
 
@@ -17,8 +25,21 @@ export class AuthController {
   })
   @ApiBody({ type: LogInDto })
   @UseGuards(LocalAuthGuard)
-  @Post('normal-user/login')
+  @Post('login')
   async login(@Request() req: any) {
-    return 'Log in';
+    return this.authService.login(req.user);
+  }
+
+  @ApiOperation({ summary: "This handles a user's sign up request." })
+  @ApiResponse({
+    status: 200,
+    description: 'Account created successfully.',
+    type: UserDto,
+  })
+  @ApiBody({ type: CreateUserDto })
+  @Post('sign-up')
+  @UsePipes(ValidationPipe)
+  createUser(@Body() createUserDto: CreateUserDto) {
+    return this.authService.signup(createUserDto);
   }
 }
