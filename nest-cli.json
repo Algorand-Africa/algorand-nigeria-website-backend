@@ -1,50 +1,10 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/blocktremp-backend-monorepo/src",
+  "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "webpack": true,
-    "tsConfigPath": "apps/blocktremp-backend-monorepo/tsconfig.app.json"
-  },
-  "monorepo": true,
-  "root": "apps/blocktremp-backend-monorepo",
-  "projects": {
-    "blocktremp-backend-monorepo": {
-      "type": "application",
-      "root": "apps/blocktremp-backend-monorepo",
-      "entryFile": "main",
-      "sourceRoot": "apps/blocktremp-backend-monorepo/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/blocktremp-backend-monorepo/tsconfig.app.json"
-      }
-    },
-    "admin": {
-      "type": "application",
-      "root": "apps/admin",
-      "entryFile": "main",
-      "sourceRoot": "apps/admin/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/admin/tsconfig.app.json"
-      }
-    },
-    "main": {
-      "type": "application",
-      "root": "apps/main",
-      "entryFile": "main",
-      "sourceRoot": "apps/main/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/main/tsconfig.app.json"
-      }
-    },
-    "vas": {
-      "type": "application",
-      "root": "apps/vas",
-      "entryFile": "main",
-      "sourceRoot": "apps/vas/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/vas/tsconfig.app.json"
-      }
-    }
+    "builder": "tsc",
+    "plugins": ["@nestjs/swagger"]
   }
 }

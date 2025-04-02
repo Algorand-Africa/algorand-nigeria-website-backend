@@ -1,2 +1,1 @@
-# web: npm run start:prod:admin
-# web: npm run start:prod
+web: npm run start:prod
