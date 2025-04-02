@@ -31,7 +31,7 @@ export class SendgridService {
     name: string;
     callbackUrl: string;
   }) {
-    const verificationLink = `${callbackUrl}/verify-email?token=${token}`;
+    const verificationLink = `${callbackUrl}/auth/email-verification?token=${token}`;
 
     const mail = {
       to: email,
@@ -54,7 +54,7 @@ export class SendgridService {
     name: string;
     callbackUrl: string;
   }) {
-    const resetLink = `${callbackUrl}/reset-password?token=${token}`;
+    const resetLink = `${callbackUrl}/auth/reset-password?token=${token}`;
 
     const mail = {
       to: email,
