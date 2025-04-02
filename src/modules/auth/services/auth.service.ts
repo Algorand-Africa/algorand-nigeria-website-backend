@@ -110,12 +110,24 @@ export class AuthService {
   }
 
   async signUp(signupDto: SignupDto) {
-    const { password, confirmPassword, email, fullName, country, callbackUrl } =
-      signupDto;
-    const existingUser = await this.usersRepo.findOneBy({ email });
+    const {
+      password,
+      confirmPassword,
+      email,
+      fullName,
+      country,
+      callbackUrl,
+      username,
+    } = signupDto;
+    const existingUser = await this.usersRepo.findOne({
+      where: [{ email }, { username }],
+    });
 
     if (existingUser) {
-      throw new BadRequestException('This email is already in use');
+      if (existingUser.email === email) {
+        throw new BadRequestException('This email is already in use');
+      }
+      throw new BadRequestException('This username is already taken');
     }
 
     if (signupDto.password !== confirmPassword) {
@@ -130,6 +142,7 @@ export class AuthService {
       full_name: fullName,
       country: country,
       role: RoleType.USER,
+      username,
     });
 
     // Generate a random token

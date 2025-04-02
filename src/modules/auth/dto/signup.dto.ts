@@ -37,6 +37,11 @@ export class SignupDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  username: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   callbackUrl: string;
 }
 

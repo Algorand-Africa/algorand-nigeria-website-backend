@@ -20,6 +20,9 @@ export class ProfileResponseDto {
   @ApiProperty()
   fullName: string;
 
+  @ApiProperty()
+  username: string;
+
   @ApiPropertyOptional()
   phone?: string;
 

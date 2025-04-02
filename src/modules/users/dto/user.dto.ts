@@ -13,6 +13,9 @@ export class UserDto {
   fullName: string;
 
   @ApiProperty()
+  username: string;
+
+  @ApiProperty()
   email: string;
 
   @ApiProperty()
@@ -63,6 +66,7 @@ export const UserDtoMapper = (user: User): UserDto => {
   return {
     id: user.id,
     fullName: user.full_name,
+    username: user.username,
     email: user.email,
     role: user.role,
     status: user.status,
