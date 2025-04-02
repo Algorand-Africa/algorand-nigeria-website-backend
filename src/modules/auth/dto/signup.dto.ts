@@ -17,11 +17,6 @@ export class SignupDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  country: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
   @Matches(PASSWORD_REGEX, {
     message:
       'Password must be at least 8 characters long and contain at least one uppercase, one lowercase, one digit and one special character',

@@ -5,7 +5,7 @@ import { json, urlencoded } from 'express';
 import { AppModule } from './app.module';
 import dataSource from './config/orm.config';
 
-const appName = 'io-markets';
+const appName = 'algorand-africa';
 const logger = new Logger(`main.${appName}.bootstrap`);
 
 async function bootstrap() {
@@ -27,8 +27,8 @@ async function bootstrap() {
 
   // Swagger documentation
   const config = new DocumentBuilder()
-    .setTitle('IO Markets API')
-    .setDescription('API for managing IO Markets')
+    .setTitle('Algorand Africa API')
+    .setDescription('API for managing Algorand Africa')
     .setVersion('1.0')
     .addBearerAuth(
       {

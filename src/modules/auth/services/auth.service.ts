@@ -115,7 +115,6 @@ export class AuthService {
       confirmPassword,
       email,
       fullName,
-      country,
       callbackUrl,
       username,
     } = signupDto;
@@ -140,7 +139,6 @@ export class AuthService {
       email: email,
       password: hashedPassword,
       full_name: fullName,
-      country: country,
       role: RoleType.USER,
       username,
     });
