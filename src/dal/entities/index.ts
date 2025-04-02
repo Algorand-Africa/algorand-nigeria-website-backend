@@ -1,6 +1,7 @@
 import { Token } from './token.entity';
 import { User } from './user.entity';
+import { Event } from './event.entity';
 
-export const entities = [Token, User];
+export const entities = [Token, User, Event];
 
-export { Token, User };
+export { Token, User, Event };

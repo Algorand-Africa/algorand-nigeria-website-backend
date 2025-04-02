@@ -1,0 +1,8 @@
+export enum DATE_PERIOD {
+  TODAY = 'TODAY',
+  WEEK = 'WEEKLY',
+  MONTH = 'MONTHLY',
+  QUARTER = 'QUARTERLY',
+  YEAR = 'YEARLY',
+  ALL = 'ALL',
+}

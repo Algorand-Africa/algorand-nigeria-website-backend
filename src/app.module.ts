@@ -10,6 +10,7 @@ import { AppLoggerMiddleware } from './modules/core/middleware/app-logger.middle
 import { CoreModule } from './modules/core/core.module';
 import { UsersModule } from './modules/users';
 import { AuthModule } from './modules/auth/auth.module';
+import { EventsModule } from './modules/events/events.module';
 @Module({
   imports: [
     CacheModule.register({
@@ -26,6 +27,7 @@ import { AuthModule } from './modules/auth/auth.module';
     CoreModule,
     AuthModule,
     UsersModule,
+    EventsModule,
   ],
   providers: [
     AppService,
