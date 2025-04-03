@@ -8,7 +8,12 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Roles } from 'src/modules/auth/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/modules/auth/guards/roles.guard';
@@ -26,6 +31,11 @@ export class AdminUsersController {
   @Get()
   @Roles(RoleType.SUPER_ADMIN)
   @ApiOperation({ summary: 'Get all users' })
+  @ApiResponse({
+    status: 200,
+    description: 'All users fetched successfully',
+    type: UserDto,
+  })
   async findAll(
     @Query() query: GetAllUsersQueryDto,
   ): Promise<PaginatedResponse<UserDto>> {
@@ -35,6 +45,11 @@ export class AdminUsersController {
   @Get(':id')
   @Roles(RoleType.SUPER_ADMIN)
   @ApiOperation({ summary: 'Get user by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'User fetched successfully',
+    type: UserDto,
+  })
   async findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
   }
@@ -42,6 +57,11 @@ export class AdminUsersController {
   @Get(':email/email')
   @Roles(RoleType.SUPER_ADMIN)
   @ApiOperation({ summary: 'Get user by email' })
+  @ApiResponse({
+    status: 200,
+    description: 'User fetched successfully',
+    type: UserDto,
+  })
   async findByEmail(@Param('email') email: string) {
     return this.userService.findByEmail(email);
   }
@@ -49,6 +69,11 @@ export class AdminUsersController {
   @Put(':id')
   @Roles(RoleType.SUPER_ADMIN)
   @ApiOperation({ summary: 'Update user' })
+  @ApiResponse({
+    status: 200,
+    description: 'User updated successfully',
+    type: UserDto,
+  })
   async update(@Param('id') id: string, @Body() data: UpdateUserDto) {
     return this.userService.update(id, data);
   }

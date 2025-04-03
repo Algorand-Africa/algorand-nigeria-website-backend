@@ -83,6 +83,43 @@ export class FileUploadService {
     return { ipfsUrl, cloudinaryUrl };
   }
 
+  async uploadToCloudinary(
+    base64: string,
+    oldKey: string,
+    dirName: string,
+  ): Promise<ImageData | undefined> {
+    let publicId: string;
+
+    if (!oldKey) {
+      const time = Date.now().toString();
+      publicId = `${time}-${generateOtp(10)}`;
+    } else {
+      publicId = oldKey;
+    }
+
+    this.logger.log('Uploading to cloudinary...');
+
+    return new Promise<ImageData>((resolve, reject) => {
+      const uri = `${base64}`;
+      Cloudinary.v2.uploader.upload(
+        uri,
+        { folder: dirName, public_id: publicId },
+        (error, result) => {
+          if (error || !result) {
+            reject(error || 'There was a problem uploading the image');
+          } else {
+            const data: ImageData = {
+              imageKey: publicId,
+              image: result.url,
+            };
+            this.logger.log(`Upload successful. Public ID: ${publicId}`);
+            resolve(data);
+          }
+        },
+      );
+    });
+  }
+
   private async uploadFileToIPFS(
     base64Image: string,
     name?: string,
@@ -123,43 +160,6 @@ export class FileUploadService {
     const mimeMatch = arr[0].match(/:(.*?);/);
     const mimeType = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
     return mimeType;
-  }
-
-  private async uploadToCloudinary(
-    base64: string,
-    oldKey: string,
-    dirName: string,
-  ): Promise<ImageData | undefined> {
-    let publicId: string;
-
-    if (!oldKey) {
-      const time = Date.now().toString();
-      publicId = `${time}-${generateOtp(10)}`;
-    } else {
-      publicId = oldKey;
-    }
-
-    this.logger.log('Uploading to cloudinary...');
-
-    return new Promise<ImageData>((resolve, reject) => {
-      const uri = `${base64}`;
-      Cloudinary.v2.uploader.upload(
-        uri,
-        { folder: dirName, public_id: publicId },
-        (error, result) => {
-          if (error || !result) {
-            reject(error || 'There was a problem uploading the image');
-          } else {
-            const data: ImageData = {
-              imageKey: publicId,
-              image: result.url,
-            };
-            this.logger.log(`Upload successful. Public ID: ${publicId}`);
-            resolve(data);
-          }
-        },
-      );
-    });
   }
 
   async deleteFromCloudinary(key: string) {

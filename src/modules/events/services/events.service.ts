@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Event } from '../../../dal/entities/event.entity';
 import { EventRegistration } from '../../../dal/entities/event-registration.entity';
-import { AllEventsQueryDto, EventDto } from '../dto/event.dto';
+import { AllEventsQueryDto, EventDetailsDto, EventDto } from '../dto/event.dto';
 import { PaginatedResponse } from 'src/modules/core';
 import {
   endOfDay,
@@ -21,8 +21,9 @@ import {
   startOfQuarter,
   endOfQuarter,
 } from 'date-fns';
-import { EventDtoMapper } from '../mappers/event.mapper';
-import { EventStatus, UserEventStatus } from '../constants/enums';
+import { EventDetailsDtoMapper, EventDtoMapper } from '../mappers/event.mapper';
+import { UserEventStatus } from '../constants/enums';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class EventsService {
@@ -34,7 +35,7 @@ export class EventsService {
     private readonly eventRegistrationRepository: Repository<EventRegistration>,
   ) {}
 
-  async getUpcomingEvents(
+  async getAllEvents(
     options: AllEventsQueryDto,
   ): Promise<PaginatedResponse<EventDto>> {
     const today = new Date();
@@ -87,6 +88,19 @@ export class EventsService {
       page,
       pageSize,
     );
+  }
+
+  async getEventById(eventId: string): Promise<EventDetailsDto> {
+    const where = isUUID(eventId) ? { id: eventId } : { slug: eventId };
+    const event = await this.eventRepository.findOne({
+      where,
+    });
+
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    return EventDetailsDtoMapper(event);
   }
 
   async registerForEvent(eventId: string, userId: string) {

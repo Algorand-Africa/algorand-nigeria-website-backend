@@ -1,8 +1,22 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { EventCategory, EventStatus, EventType } from '../constants/enums';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  EventCategory,
+  EventStatus,
+  EventType,
+  UserEventStatus,
+} from '../constants/enums';
 import { PaginationParams } from 'src/modules/core/dto/pagination-params.dto';
-import { IsEnum, IsOptional } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Matches,
+} from 'class-validator';
 import { DATE_PERIOD } from 'src/modules/core/constants/dates';
+import { IMAGE_BASE64_REGEX } from 'src/modules/core/constants/base64-regex';
 
 export class EventDto {
   @ApiProperty()
@@ -33,6 +47,36 @@ export class EventDto {
   status: EventStatus;
 }
 
+export class EventDetailsDto extends EventDto {
+  @ApiProperty()
+  eventSummary: string;
+
+  @ApiProperty()
+  imageGallery: string[];
+}
+
+export class AdminEventDto extends EventDto {
+  @ApiProperty()
+  eventSummary: string;
+
+  @ApiProperty()
+  imageGallery: string[];
+
+  @ApiProperty()
+  numberOfRegistrations: number;
+
+  @ApiProperty()
+  numberOfAttendees: number;
+}
+
+export class AdminEventDetailsDto extends AdminEventDto {
+  @ApiProperty()
+  smartContractId: number;
+
+  @ApiProperty()
+  asaId: number;
+}
+
 export class AllEventsQueryDto extends PaginationParams {
   @ApiProperty({ enum: EventCategory })
   @IsOptional()
@@ -53,4 +97,104 @@ export class AllEventsQueryDto extends PaginationParams {
   @IsOptional()
   @IsEnum(EventStatus)
   status?: EventStatus;
+}
+
+export class EventRegistrantDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  fullName: string;
+
+  @ApiProperty()
+  email: string;
+}
+
+export class CreateEventDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @ApiProperty()
+  @IsString()
+  location: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @Matches(IMAGE_BASE64_REGEX, {
+    message: 'Image must be a base64 string',
+  })
+  base64Image: string;
+
+  @ApiProperty()
+  @IsDateString()
+  date: Date;
+
+  @ApiProperty({ enum: EventCategory })
+  @IsEnum(EventCategory)
+  category: EventCategory;
+
+  @ApiProperty({ enum: EventType })
+  @IsEnum(EventType)
+  type: EventType;
+}
+
+export class UpdateEventDto {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  title: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  description: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  location: string;
+
+  @ApiPropertyOptional()
+  @IsDateString()
+  @IsOptional()
+  date: Date;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  image: string;
+
+  @ApiPropertyOptional({ enum: EventCategory })
+  @IsEnum(EventCategory)
+  @IsOptional()
+  category: EventCategory;
+
+  @ApiPropertyOptional({ enum: EventType })
+  @IsEnum(EventType)
+  @IsOptional()
+  type: EventType;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  eventSummary: string;
+
+  @ApiPropertyOptional()
+  @IsArray()
+  @IsOptional()
+  imageGallery: string[];
+}
+
+export class EventRegistrantsQueryDto extends PaginationParams {
+  @ApiProperty({ enum: UserEventStatus })
+  @IsEnum(UserEventStatus)
+  @IsOptional()
+  status?: UserEventStatus;
 }
