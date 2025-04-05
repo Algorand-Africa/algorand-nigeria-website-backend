@@ -161,7 +161,8 @@ export class AdminEventsService {
     const qb = this.eventRegistrationRepository
       .createQueryBuilder('event_registration')
       .select('user.*')
-      .where('event_registration.event_id = :id', { id: eventId });
+      .where('event_registration.event_id = :id', { id: eventId })
+      .leftJoin(User, 'user', 'user.id = event_registration.user_id');
 
     if (status) {
       qb.andWhere('event_registration.status = :status', { status });
