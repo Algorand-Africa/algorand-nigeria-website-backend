@@ -55,6 +55,9 @@ export class EventDetailsDto extends EventDto {
 
   @ApiProperty()
   imageGallery: string[];
+
+  @ApiPropertyOptional({ enum: UserEventStatus })
+  userStatus?: UserEventStatus;
 }
 
 export class AdminEventDto extends EventDto {
@@ -69,6 +72,9 @@ export class AdminEventDto extends EventDto {
 
   @ApiProperty()
   numberOfAttendees: number;
+
+  @ApiProperty()
+  attendanceLink: string;
 }
 
 export class AdminEventDetailsDto extends AdminEventDto {

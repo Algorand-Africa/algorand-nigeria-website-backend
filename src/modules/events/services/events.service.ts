@@ -90,7 +90,10 @@ export class EventsService {
     );
   }
 
-  async getEventById(eventId: string): Promise<EventDetailsDto> {
+  async getEventById(
+    eventId: string,
+    userId?: string,
+  ): Promise<EventDetailsDto> {
     const where = isUUID(eventId) ? { id: eventId } : { slug: eventId };
     const event = await this.eventRepository.findOne({
       where,
@@ -100,7 +103,19 @@ export class EventsService {
       throw new NotFoundException('Event not found');
     }
 
-    return EventDetailsDtoMapper(event);
+    let userStatus: UserEventStatus | undefined;
+
+    if (userId) {
+      const registration = await this.eventRegistrationRepository.findOne({
+        where: { event_id: event.id, user_id: userId },
+      });
+
+      if (registration) {
+        userStatus = registration.status;
+      }
+    }
+
+    return EventDetailsDtoMapper(event, userStatus);
   }
 
   async registerForEvent(eventId: string, userId: string, attendance = false) {
@@ -114,7 +129,7 @@ export class EventsService {
     }
 
     const registration = await this.eventRegistrationRepository.findOne({
-      where: { event_id: eventId, user_id: userId },
+      where: { event_id: event.id, user_id: userId },
     });
 
     if (registration) {
@@ -153,13 +168,45 @@ export class EventsService {
     return this.markEventAsAttended(event.id, userId);
   }
 
-  private async markEventAsAttended(eventId: string, userId: string) {
+  async markCollectedNFT(userId: string, eventId: string) {
+    const where = isUUID(eventId) ? { id: eventId } : { slug: eventId };
+    const event = await this.eventRepository.findOne({
+      where,
+    });
+
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
     const registration = await this.eventRegistrationRepository.findOne({
+      where: { event_id: event.id, user_id: userId },
+    });
+
+    if (!registration) {
+      throw new BadRequestException('User not registered for this event');
+    }
+
+    registration.status = UserEventStatus.COLLECTED_NFT;
+    await this.eventRegistrationRepository.save(registration);
+
+    return {
+      message: 'NFT marked as collected successfully',
+    };
+  }
+
+  private async markEventAsAttended(eventId: string, userId: string) {
+    let registration: EventRegistration;
+
+    registration = await this.eventRegistrationRepository.findOne({
       where: { event_id: eventId, user_id: userId },
     });
 
     if (!registration) {
-      return this.registerForEvent(eventId, userId, true);
+      await this.registerForEvent(eventId, userId);
+
+      registration = await this.eventRegistrationRepository.findOne({
+        where: { event_id: eventId, user_id: userId },
+      });
     }
 
     registration.status = UserEventStatus.ATTENDED;

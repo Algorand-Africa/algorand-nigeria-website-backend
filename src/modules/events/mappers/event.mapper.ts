@@ -5,7 +5,7 @@ import {
   EventDetailsDto,
   EventDto,
 } from '../dto/event.dto';
-
+import { UserEventStatus } from '../constants/enums';
 export const EventDtoMapper = (event: Event): EventDto => {
   return {
     id: event.slug,
@@ -20,11 +20,15 @@ export const EventDtoMapper = (event: Event): EventDto => {
   };
 };
 
-export const EventDetailsDtoMapper = (event: Event): EventDetailsDto => {
+export const EventDetailsDtoMapper = (
+  event: Event,
+  userStatus?: UserEventStatus,
+): EventDetailsDto => {
   return {
     ...EventDtoMapper(event),
     eventSummary: event.event_summary,
     imageGallery: event.image_gallery,
+    userStatus,
   };
 };
 
@@ -38,6 +42,7 @@ export const AdminEventDtoMapper = (
     imageGallery: event.image_gallery,
     numberOfRegistrations: event.registrations,
     numberOfAttendees: event.attendees,
+    attendanceLink: event.attendance_link,
   };
 };
 
