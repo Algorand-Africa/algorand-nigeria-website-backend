@@ -137,7 +137,7 @@ export class EventsService {
     }
 
     const newRegistration = this.eventRegistrationRepository.create({
-      event_id: eventId,
+      event_id: event.id,
       user_id: userId,
     });
 
@@ -161,7 +161,7 @@ export class EventsService {
       throw new BadRequestException('Invalid attendance token');
     }
 
-    if (event.status !== EventStatus.PAST) {
+    if (event.status === EventStatus.PAST) {
       throw new BadRequestException('This event has ended');
     }
 

@@ -74,7 +74,7 @@ export class AdminUsersService {
   }
 
   async update(id: string, data: UpdateUserDto): Promise<UserDto> {
-    const user = await this.findOne(id);
+    await this.findOne(id);
 
     await this.userRepo.update(id, data);
 

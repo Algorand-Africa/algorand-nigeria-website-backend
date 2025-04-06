@@ -29,6 +29,8 @@ export const EventDetailsDtoMapper = (
     eventSummary: event.event_summary,
     imageGallery: event.image_gallery,
     userStatus,
+    smartContractId: event.smart_contract_id,
+    asaId: event.asa_id,
   };
 };
 

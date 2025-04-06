@@ -58,6 +58,12 @@ export class EventDetailsDto extends EventDto {
 
   @ApiPropertyOptional({ enum: UserEventStatus })
   userStatus?: UserEventStatus;
+
+  @ApiProperty()
+  smartContractId: number;
+
+  @ApiProperty()
+  asaId: number;
 }
 
 export class AdminEventDto extends EventDto {

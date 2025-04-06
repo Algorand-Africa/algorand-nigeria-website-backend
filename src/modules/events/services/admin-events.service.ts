@@ -245,7 +245,7 @@ export class AdminEventsService {
 
     const token = crypto.randomBytes(32).toString('base64url');
 
-    const attendanceLink = `${prefixUrl}/event/${event.slug}?token=${token}`;
+    const attendanceLink = `${prefixUrl}/events/${event.slug}?token=${token}`;
 
     event.attendance_link = attendanceLink;
     event.attendance_token = token;
