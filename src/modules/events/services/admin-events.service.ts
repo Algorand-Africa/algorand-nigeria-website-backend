@@ -271,6 +271,8 @@ export class AdminEventsService {
       type,
       eventSummary,
       imageGallery,
+      smartContractId,
+      asaId,
     } = dto;
 
     const event = await this.eventRepository.findOne({
@@ -296,6 +298,14 @@ export class AdminEventsService {
 
     if (description) {
       event.description = description;
+    }
+
+    if (asaId) {
+      event.asa_id = Number(asaId);
+    }
+
+    if (smartContractId) {
+      event.smart_contract_id = Number(smartContractId);
     }
 
     if (location) {
