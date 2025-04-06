@@ -22,7 +22,7 @@ import {
   endOfQuarter,
 } from 'date-fns';
 import { EventDetailsDtoMapper, EventDtoMapper } from '../mappers/event.mapper';
-import { UserEventStatus } from '../constants/enums';
+import { EventStatus, UserEventStatus } from '../constants/enums';
 import { isUUID } from 'class-validator';
 
 @Injectable()
@@ -103,9 +103,10 @@ export class EventsService {
     return EventDetailsDtoMapper(event);
   }
 
-  async registerForEvent(eventId: string, userId: string) {
+  async registerForEvent(eventId: string, userId: string, attendance = false) {
+    const where = isUUID(eventId) ? { id: eventId } : { slug: eventId };
     const event = await this.eventRepository.findOne({
-      where: { id: eventId },
+      where,
     });
 
     if (!event) {
@@ -127,19 +128,38 @@ export class EventsService {
 
     await this.eventRegistrationRepository.save(newRegistration);
 
+    const message = attendance
+      ? 'Event marked as attended successfully'
+      : 'User registered for event successfully';
+
     return {
-      message: 'User registered for event successfully',
+      message,
     };
   }
 
-  async markEventAsAttended(eventId: string, userId: string) {
-    //TODO: Perform validation
+  async markAttendance(userId: string, token: string) {
+    const event = await this.eventRepository.findOne({
+      where: { attendance_token: token },
+    });
+
+    if (!event) {
+      throw new BadRequestException('Invalid attendance token');
+    }
+
+    if (event.status !== EventStatus.PAST) {
+      throw new BadRequestException('This event has ended');
+    }
+
+    return this.markEventAsAttended(event.id, userId);
+  }
+
+  private async markEventAsAttended(eventId: string, userId: string) {
     const registration = await this.eventRegistrationRepository.findOne({
       where: { event_id: eventId, user_id: userId },
     });
 
     if (!registration) {
-      return this.registerForEvent(eventId, userId);
+      return this.registerForEvent(eventId, userId, true);
     }
 
     registration.status = UserEventStatus.ATTENDED;

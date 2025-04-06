@@ -46,4 +46,10 @@ export class Event extends BaseEntity {
 
   @Column({ type: 'jsonb', nullable: false, default: [] })
   image_gallery: string[];
+
+  @Column({ type: 'varchar', nullable: true })
+  attendance_token: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  attendance_link: string;
 }

@@ -49,4 +49,14 @@ export class EventsController {
   ) {
     return this.eventService.registerForEvent(id, user.id);
   }
+
+  @ApiBearerAuth('Bearer')
+  @UseGuards(JwtAuthGuard)
+  @Post(':attendanceToken/attendance')
+  async markAttendance(
+    @Param('attendanceToken') attendanceToken: string,
+    @CurrentUser() user: { id: string },
+  ) {
+    return this.eventService.markAttendance(user.id, attendanceToken);
+  }
 }

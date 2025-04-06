@@ -22,6 +22,8 @@ import {
   EventDetailsDto,
   EventRegistrantDto,
   EventRegistrantsQueryDto,
+  GenerateAttendanceTokenDto,
+  GenerateAttendanceTokenResponseDto,
   UpdateEventDto,
 } from '../dto/event.dto';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
@@ -86,6 +88,21 @@ export class AdminEventsController {
   @Post()
   async createEvent(@Body() dto: CreateEventDto) {
     return this.eventService.createEvent(dto);
+  }
+
+  @ApiOperation({ summary: 'Generate attendance link for an event' })
+  @ApiResponse({
+    status: 200,
+    description: 'Attendance link generated successfully',
+    type: GenerateAttendanceTokenResponseDto,
+  })
+  @Roles(RoleType.SUPER_ADMIN)
+  @Post(':id/attendance-link')
+  async generateAttendanceLink(
+    @Param('id') id: string,
+    @Body() dto: GenerateAttendanceTokenDto,
+  ) {
+    return this.eventService.generateAttendanceLink(dto);
   }
 
   @ApiOperation({ summary: 'Update an event' })

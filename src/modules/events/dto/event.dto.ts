@@ -13,7 +13,9 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUrl,
   Matches,
+  ValidateIf,
 } from 'class-validator';
 import { DATE_PERIOD } from 'src/modules/core/constants/dates';
 import { IMAGE_BASE64_REGEX } from 'src/modules/core/constants/base64-regex';
@@ -190,6 +192,21 @@ export class UpdateEventDto {
   @IsArray()
   @IsOptional()
   imageGallery: string[];
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @ValidateIf((object) => object.asaId !== null || object.asaId !== undefined)
+  smartContractId: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @ValidateIf(
+    (object) =>
+      object.smartContractId !== null || object.smartContractId !== undefined,
+  )
+  asaId: string;
 }
 
 export class EventRegistrantsQueryDto extends PaginationParams {
@@ -197,4 +214,19 @@ export class EventRegistrantsQueryDto extends PaginationParams {
   @IsEnum(UserEventStatus)
   @IsOptional()
   status?: UserEventStatus;
+}
+
+export class GenerateAttendanceTokenDto {
+  @ApiProperty()
+  @IsString()
+  eventId: string;
+
+  @ApiProperty()
+  @IsUrl()
+  prefixUrl: string;
+}
+
+export class GenerateAttendanceTokenResponseDto {
+  @ApiProperty()
+  attendanceLink: string;
 }

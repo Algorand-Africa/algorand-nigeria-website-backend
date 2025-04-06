@@ -16,6 +16,8 @@ import {
   UpdateEventDto,
   EventDetailsDto,
   EventRegistrantsQueryDto,
+  GenerateAttendanceTokenDto,
+  GenerateAttendanceTokenResponseDto,
 } from '../dto/event.dto';
 import { FileUploadService, PaginatedResponse } from 'src/modules/core';
 import {
@@ -39,6 +41,7 @@ import { EventStatus, UserEventStatus } from '../constants/enums';
 import { User } from 'src/dal/entities';
 import { convertToUrlFormat } from 'src/modules/core/utils/string';
 import { IMAGE_BASE64_REGEX } from 'src/modules/core/constants/base64-regex';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AdminEventsService {
@@ -227,6 +230,35 @@ export class AdminEventsService {
     });
   }
 
+  async generateAttendanceLink(
+    dto: GenerateAttendanceTokenDto,
+  ): Promise<GenerateAttendanceTokenResponseDto> {
+    const { eventId, prefixUrl } = dto;
+
+    const event = await this.eventRepository.findOne({
+      where: { id: eventId },
+    });
+
+    if (event.attendance_link) {
+      return {
+        attendanceLink: event.attendance_link,
+      };
+    }
+
+    const token = crypto.randomBytes(32).toString('base64url');
+
+    const attendanceLink = `${prefixUrl}/event/${event.slug}?token=${token}`;
+
+    event.attendance_link = attendanceLink;
+    event.attendance_token = token;
+
+    await this.eventRepository.save(event);
+
+    return {
+      attendanceLink,
+    };
+  }
+
   async updateEvent(
     eventId: string,
     dto: UpdateEventDto,
@@ -292,7 +324,7 @@ export class AdminEventsService {
       event.event_summary = eventSummary;
     }
 
-    if (imageGallery.length > 0) {
+    if (imageGallery?.length > 0) {
       event.image_gallery = [];
       for (const image of imageGallery) {
         const isBase64 = image.match(IMAGE_BASE64_REGEX);
@@ -309,6 +341,8 @@ export class AdminEventsService {
           event.image_gallery.push(image);
         }
       }
+    } else if (imageGallery?.length === 0) {
+      event.image_gallery = [];
     }
 
     await this.eventRepository.save(event);
