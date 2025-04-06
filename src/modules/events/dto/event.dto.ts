@@ -101,12 +101,15 @@ export class AllEventsQueryDto extends PaginationParams {
 
 export class EventRegistrantDto {
   @ApiProperty()
+  @IsString()
   id: string;
 
   @ApiProperty()
+  @IsString()
   fullName: string;
 
   @ApiProperty()
+  @IsString()
   email: string;
 }
 
