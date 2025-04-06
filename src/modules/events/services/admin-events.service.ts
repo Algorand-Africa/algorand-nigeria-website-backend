@@ -173,15 +173,13 @@ export class AdminEventsService {
 
     qb.offset(skip).limit(pageSize);
 
-    console.log(qb.getQueryAndParameters());
-
     const [data, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
 
     return new PaginatedResponse(
-      data.map((registrant: User) => ({
-        id: registrant.id,
-        fullName: registrant.full_name,
-        email: registrant.email,
+      data.map((registrant: any) => ({
+        id: registrant.u_id,
+        fullName: registrant.u_full_name,
+        email: registrant.u_email,
       })),
       total,
       page,
