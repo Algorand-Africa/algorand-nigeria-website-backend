@@ -10,6 +10,7 @@ export class ProfileDtoMapper {
       phone: user.phone,
       verified: user.email_verified_at ? true : false,
       role: user.role,
+      image: user.profile_picture_url,
     };
   }
 }

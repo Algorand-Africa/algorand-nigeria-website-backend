@@ -31,4 +31,7 @@ export class ProfileResponseDto {
 
   @ApiPropertyOptional()
   role: string;
+
+  @ApiPropertyOptional()
+  image?: string;
 }
