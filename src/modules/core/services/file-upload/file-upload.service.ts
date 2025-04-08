@@ -8,6 +8,7 @@ import * as Cloudinary from 'cloudinary';
 export class FileUploadService {
   private readonly pinata: PinataSDK;
   private readonly logger = new Logger(FileUploadService.name);
+
   constructor() {
     this.pinata = new PinataSDK({
       pinataJwt: process.env.PINATA_JWT,

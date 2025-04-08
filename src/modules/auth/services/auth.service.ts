@@ -21,7 +21,7 @@ import { UpdatePasswordDto } from '../dto/update-password.dto';
 import { ProfileResponseDto } from '../dto/profile.dto';
 import { ProfileUpdateDto } from '../dto/profile.dto';
 import { ProfileDtoMapper } from '../mappers/profile.mapper';
-import { SendgridService } from 'src/modules/core';
+import { FileUploadService, SendgridService } from 'src/modules/core';
 import { SignupDto, VerifyEmailDto } from '../dto/signup.dto';
 import { RoleType } from 'src/modules/users/enums/role-type.enum';
 
@@ -37,6 +37,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly bcryptService: BcryptService,
     private readonly sendgridService: SendgridService,
+    private readonly fileUploadService: FileUploadService,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -270,19 +271,24 @@ export class AuthService {
     return ProfileDtoMapper.toDto(updatedUser);
   }
 
-  async updateProfilePicture(
-    userId: string,
-    file: Express.Multer.File,
-  ): Promise<string> {
+  async updateProfilePicture(userId: string, file: Express.Multer.File) {
     const user = await this.findById(userId);
 
-    const fileUrl = ''; // TODO: Implement file upload
+    const base64 = `data:image/${file.mimetype.split('/')[1]};base64,${file.buffer.toString('base64')}`;
 
-    user.profile_picture_url = fileUrl;
+    const imageData = await this.fileUploadService.uploadToCloudinary(
+      base64,
+      null,
+      'profile_pictures',
+    );
 
-    await this.usersRepo.update(userId, { profile_picture_url: fileUrl });
+    user.profile_picture_url = imageData.image;
 
-    return fileUrl;
+    await this.usersRepo.update(userId, {
+      profile_picture_url: imageData.image,
+    });
+
+    return { imageUrl: imageData.image };
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {

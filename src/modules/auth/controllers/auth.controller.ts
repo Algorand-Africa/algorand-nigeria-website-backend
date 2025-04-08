@@ -172,7 +172,7 @@ export class AuthController {
     )
     file: Express.Multer.File,
     @CurrentUser() user: { id: string },
-  ): Promise<BaseResponseDto<string>> {
+  ) {
     return new BaseResponseDto({
       status: 200,
       description: 'Profile picture uploaded successfully',
