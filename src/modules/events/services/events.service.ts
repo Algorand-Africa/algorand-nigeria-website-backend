@@ -103,7 +103,7 @@ export class EventsService {
       throw new NotFoundException('Event not found');
     }
 
-    let userStatus: UserEventStatus | undefined;
+    let userStatus: UserEventStatus = UserEventStatus.NOT_REGISTERED;
 
     if (userId) {
       const registration = await this.eventRegistrationRepository.findOne({

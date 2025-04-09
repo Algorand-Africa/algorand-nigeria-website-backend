@@ -52,4 +52,7 @@ export class Event extends BaseEntity {
 
   @Column({ type: 'varchar', nullable: true })
   attendance_link: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  rsvp_link: string;
 }

@@ -16,6 +16,7 @@ export enum EventStatus {
 }
 
 export enum UserEventStatus {
+  NOT_REGISTERED = 'not_registered',
   REGISTERED = 'registered',
   ATTENDED = 'attended',
   COLLECTED_NFT = 'collected_nft',

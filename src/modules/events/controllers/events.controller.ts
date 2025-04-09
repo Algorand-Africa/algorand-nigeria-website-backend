@@ -29,7 +29,6 @@ export class EventsController {
     return this.eventService.getAllEvents(query);
   }
 
-  @Public()
   @UseGuards(OptionalJwtGuard())
   @ApiOperation({ summary: 'Fetch event by id' })
   @ApiResponse({
