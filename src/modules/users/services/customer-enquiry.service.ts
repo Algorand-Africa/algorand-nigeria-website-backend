@@ -66,12 +66,12 @@ export class CustomerEnquiryService {
     createCustomerEnquiryDto: CreateCustomerEnquiryDto,
     userId?: string,
   ): Promise<CustomerEnquiry> {
-    const { message, enquiry_type } = createCustomerEnquiryDto;
+    const { message, enquiryType } = createCustomerEnquiryDto;
 
-    let { full_name, email, phone } = createCustomerEnquiryDto;
+    let { fullName, email, phone } = createCustomerEnquiryDto;
 
     if (!userId) {
-      if (!full_name || !email || !phone) {
+      if (!fullName || !email || !phone) {
         throw new BadRequestException(
           'Full name, email and phone are required',
         );
@@ -83,17 +83,17 @@ export class CustomerEnquiryService {
       if (!user) {
         throw new BadRequestException('User not found');
       }
-      full_name = user.full_name;
+      fullName = user.full_name;
       email = user.email;
       phone = user.phone || '';
     }
 
     const customerEnquiry = this.customerEnquiryRepository.create({
-      full_name,
+      full_name: fullName,
       email,
       phone,
       message,
-      enquiry_type,
+      enquiry_type: enquiryType,
       status: EnquiryStatus.PENDING,
     });
 

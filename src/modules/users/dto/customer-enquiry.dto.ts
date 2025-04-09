@@ -37,7 +37,7 @@ export class CreateCustomerEnquiryDto {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  full_name?: string;
+  fullName?: string;
 
   @ApiPropertyOptional()
   @IsEmail()
@@ -55,7 +55,7 @@ export class CreateCustomerEnquiryDto {
 
   @ApiPropertyOptional()
   @IsString()
-  enquiry_type: string;
+  enquiryType: string;
 }
 
 export class UpdateCustomerEnquiryDto {
