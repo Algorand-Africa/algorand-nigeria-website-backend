@@ -81,6 +81,9 @@ export class AdminEventDto extends EventDto {
 
   @ApiProperty()
   attendanceLink: string;
+
+  @ApiProperty()
+  rsvpLink: string;
 }
 
 export class AdminEventDetailsDto extends AdminEventDto {
@@ -160,6 +163,11 @@ export class CreateEventDto {
   @ApiProperty({ enum: EventType })
   @IsEnum(EventType)
   type: EventType;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  rsvpLink?: string;
 }
 
 export class UpdateEventDto {
@@ -222,6 +230,11 @@ export class UpdateEventDto {
       object.smartContractId !== null || object.smartContractId !== undefined,
   )
   asaId: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  rsvpLink: string;
 }
 
 export class EventRegistrantsQueryDto extends PaginationParams {

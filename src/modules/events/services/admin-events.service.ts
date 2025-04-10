@@ -42,17 +42,22 @@ import { User } from 'src/dal/entities';
 import { convertToUrlFormat } from 'src/modules/core/utils/string';
 import { IMAGE_BASE64_REGEX } from 'src/modules/core/constants/base64-regex';
 import * as crypto from 'crypto';
-
+import { SendgridService } from 'src/modules/core/services/sendgrid/sendgrid.service';
 @Injectable()
 export class AdminEventsService {
   constructor(
     @InjectRepository(Event)
     private readonly eventRepository: Repository<Event>,
 
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+
     @InjectRepository(EventRegistration)
     private readonly eventRegistrationRepository: Repository<EventRegistration>,
 
     private readonly fileUploadService: FileUploadService,
+
+    private readonly sendgridService: SendgridService,
   ) {}
 
   async getAllEvents(
@@ -188,8 +193,16 @@ export class AdminEventsService {
   }
 
   async createEvent(dto: CreateEventDto): Promise<AdminEventDto> {
-    const { title, description, location, base64Image, date, category, type } =
-      dto;
+    const {
+      title,
+      description,
+      location,
+      base64Image,
+      date,
+      category,
+      type,
+      rsvpLink,
+    } = dto;
 
     const existingTitle = await this.eventRepository.findOne({
       where: { title },
@@ -217,6 +230,7 @@ export class AdminEventsService {
       image: image.image,
       slug,
       status: EventStatus.UPCOMING,
+      rsvp_link: rsvpLink || null,
     });
 
     await this.eventRepository.save(event);
@@ -273,6 +287,7 @@ export class AdminEventsService {
       imageGallery,
       smartContractId,
       asaId,
+      rsvpLink,
     } = dto;
 
     const event = await this.eventRepository.findOne({
@@ -283,7 +298,7 @@ export class AdminEventsService {
       throw new NotFoundException('Event not found');
     }
 
-    if (event.title !== title) {
+    if (title && event.title !== title) {
       const existingTitle = await this.eventRepository.findOne({
         where: { title, id: Not(eventId) },
       });
@@ -353,9 +368,23 @@ export class AdminEventsService {
       event.image_gallery = [];
     }
 
-    await this.eventRepository.save(event);
+    let rsvpLinkChanged = false;
 
-    return EventDetailsDtoMapper(event);
+    if (rsvpLink && event.rsvp_link !== rsvpLink) {
+      rsvpLinkChanged = true;
+      event.rsvp_link = rsvpLink;
+    }
+    const updatedEvent = await this.eventRepository.save(event);
+
+    if (
+      rsvpLinkChanged &&
+      updatedEvent.rsvp_link &&
+      updatedEvent.status === EventStatus.UPCOMING
+    ) {
+      this.sendEventRSVPUpdate(updatedEvent);
+    }
+
+    return EventDetailsDtoMapper(updatedEvent);
   }
 
   async deleteEvent(eventId: string): Promise<{ message: string }> {
@@ -372,5 +401,33 @@ export class AdminEventsService {
     return {
       message: 'Event deleted successfully',
     };
+  }
+
+  private async sendEventRSVPUpdate(event: Event) {
+    const registrants: { email: string }[] =
+      await this.eventRegistrationRepository
+        .createQueryBuilder('event_registration')
+        .select(['u.email as email'])
+        .where(`event_registration.event_id = '${event.id}'`)
+        .leftJoin(User, 'u', 'u.id = event_registration.user_id')
+        .getRawMany();
+
+    // send email in batches of 35
+    const batchSize = 35;
+    const batches: { email: string }[][] = [];
+
+    for (let i = 0; i < registrants.length; i += batchSize) {
+      batches.push(registrants.slice(i, i + batchSize));
+    }
+
+    for (const batch of batches) {
+      for (const registrant of batch) {
+        await this.sendgridService.sendEventRSVPUpdate({
+          eventName: event.title,
+          newEventLink: event.rsvp_link,
+          email: registrant.email,
+        });
+      }
+    }
   }
 }

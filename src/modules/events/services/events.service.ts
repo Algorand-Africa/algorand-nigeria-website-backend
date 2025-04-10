@@ -24,7 +24,8 @@ import {
 import { EventDetailsDtoMapper, EventDtoMapper } from '../mappers/event.mapper';
 import { EventStatus, UserEventStatus } from '../constants/enums';
 import { isUUID } from 'class-validator';
-
+import { SendgridService } from 'src/modules/core/services/sendgrid/sendgrid.service';
+import { User } from 'src/dal/entities';
 @Injectable()
 export class EventsService {
   constructor(
@@ -33,6 +34,11 @@ export class EventsService {
 
     @InjectRepository(EventRegistration)
     private readonly eventRegistrationRepository: Repository<EventRegistration>,
+
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+
+    private readonly sendgridService: SendgridService,
   ) {}
 
   async getAllEvents(
@@ -142,6 +148,18 @@ export class EventsService {
     });
 
     await this.eventRegistrationRepository.save(newRegistration);
+
+    if (!attendance && event.rsvp_link) {
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+      });
+
+      await this.sendgridService.sendEventRSVP({
+        email: user.email,
+        eventName: event.title,
+        eventLink: event.rsvp_link,
+      });
+    }
 
     const message = attendance
       ? 'Event marked as attended successfully'

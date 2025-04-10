@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as SendGrid from '@sendgrid/mail';
 import {
   emailVerificationHTMLTemplate,
+  eventRSVPHTMLTemplate,
+  eventRSVPUpdateHTMLTemplate,
   passwordResetHTMLTemplate,
 } from './constant';
 
@@ -61,6 +63,44 @@ export class SendgridService {
       from: 'algorandafrica@algorand.foundation',
       subject: 'Password Reset',
       html: passwordResetHTMLTemplate(resetLink, name),
+    };
+
+    return this.send(mail);
+  }
+
+  async sendEventRSVP({
+    email,
+    eventName,
+    eventLink,
+  }: {
+    email: string;
+    eventName: string;
+    eventLink: string;
+  }) {
+    const mail = {
+      to: email,
+      from: 'algorandafrica@algorand.foundation',
+      subject: 'Event Registration Confirmation',
+      html: eventRSVPHTMLTemplate(eventName, eventLink),
+    };
+
+    return this.send(mail);
+  }
+
+  async sendEventRSVPUpdate({
+    email,
+    eventName,
+    newEventLink,
+  }: {
+    email: string;
+    eventName: string;
+    newEventLink: string;
+  }) {
+    const mail = {
+      to: email,
+      from: 'algorandafrica@algorand.foundation',
+      subject: 'Event Registration Update',
+      html: eventRSVPUpdateHTMLTemplate(eventName, newEventLink),
     };
 
     return this.send(mail);

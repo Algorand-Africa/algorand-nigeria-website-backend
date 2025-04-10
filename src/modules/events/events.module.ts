@@ -8,8 +8,12 @@ import { AdminEventsController } from './controllers/admin-events.controller';
 import { EventsController } from './controllers/events.controller';
 import { AdminUsersService } from 'src/modules/users';
 import { User } from 'src/dal/entities';
+import { CoreModule } from '../core/core.module';
 @Module({
-  imports: [TypeOrmModule.forFeature([Event, EventRegistration, User])],
+  imports: [
+    TypeOrmModule.forFeature([Event, EventRegistration, User]),
+    CoreModule,
+  ],
   providers: [EventsService, AdminEventsService, AdminUsersService],
   exports: [EventsService, AdminEventsService],
   controllers: [EventsController, AdminEventsController],

@@ -45,6 +45,7 @@ export const AdminEventDtoMapper = (
     numberOfRegistrations: event.registrations,
     numberOfAttendees: event.attendees,
     attendanceLink: event.attendance_link,
+    rsvpLink: event.rsvp_link,
   };
 };
 
