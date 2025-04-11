@@ -12,7 +12,12 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Roles } from 'src/modules/auth/decorators';
 import { RoleType } from 'src/modules/users/enums/role-type.enum';
-import { CreateMultisigDto, MultisigDto } from '../dto/multisig.dto';
+import {
+  CreateMultisigDto,
+  CreateMultisigSessionDto,
+  MultisigDto,
+  UpdateMultisigSessionDto,
+} from '../dto/multisig.dto';
 import { RolesGuard } from 'src/modules/auth/guards';
 import { AdminMultisigService } from '../services/admin-multisig.service';
 
@@ -81,5 +86,49 @@ export class AdminMultisigController {
   @Delete(':id')
   async deleteMultisig(@Param('id') id: string) {
     return this.multisigService.deleteMultisig(id);
+  }
+
+  @ApiOperation({ summary: 'Create a multisig session' })
+  @ApiResponse({
+    status: 201,
+    description: 'Multisig session created successfully',
+  })
+  @Roles(RoleType.SUPER_ADMIN)
+  @Post('session')
+  async createMultisigSession(@Body() dto: CreateMultisigSessionDto) {
+    return this.multisigService.createMultisigSession(dto);
+  }
+
+  @ApiOperation({ summary: 'Get a multisig session by Token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Multisig session fetched successfully',
+  })
+  @Roles(RoleType.SUPER_ADMIN)
+  @Get('session/:token')
+  async getMultisigSessionByToken(@Param('token') token: string) {
+    return this.multisigService.getMultisigSessionByToken(token);
+  }
+
+  @ApiOperation({ summary: 'Udate a multisig session' })
+  @ApiResponse({
+    status: 200,
+    description: 'Multisig session updated successfully',
+  })
+  @Roles(RoleType.SUPER_ADMIN)
+  @Post('session/update')
+  async updateMultisigSession(@Body() dto: UpdateMultisigSessionDto) {
+    return this.multisigService.updateMultisigSession(dto);
+  }
+
+  @ApiOperation({ summary: 'Delete a multisig session' })
+  @ApiResponse({
+    status: 200,
+    description: 'Multisig session deleted successfully',
+  })
+  @Roles(RoleType.SUPER_ADMIN)
+  @Delete('session/:token')
+  async deleteMultisigSession(@Param('token') token: string) {
+    return this.multisigService.deleteMultisigSession(token);
   }
 }
