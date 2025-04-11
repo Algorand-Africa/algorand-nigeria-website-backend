@@ -11,6 +11,7 @@ import { CoreModule } from './modules/core/core.module';
 import { UsersModule } from './modules/users';
 import { AuthModule } from './modules/auth/auth.module';
 import { EventsModule } from './modules/events/events.module';
+import { MultisigModule } from './modules/multisig/multisig.module';
 @Module({
   imports: [
     CacheModule.register({
@@ -28,6 +29,7 @@ import { EventsModule } from './modules/events/events.module';
     AuthModule,
     UsersModule,
     EventsModule,
+    MultisigModule,
   ],
   providers: [
     AppService,
