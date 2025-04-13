@@ -147,9 +147,9 @@ export class CreateEventDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  // @Matches(IMAGE_BASE64_REGEX, {
-  //   message: 'Image must be a base64 string',
-  // })
+  @Matches(IMAGE_BASE64_REGEX, {
+    message: 'Image must be a base64 string',
+  })
   base64Image: string;
 
   @ApiProperty()
@@ -205,6 +205,11 @@ export class UpdateEventDto {
   @IsEnum(EventType)
   @IsOptional()
   type: EventType;
+
+  @ApiPropertyOptional({ enum: EventStatus })
+  @IsEnum(EventStatus)
+  @IsOptional()
+  status: EventStatus;
 
   @ApiPropertyOptional()
   @IsString()
