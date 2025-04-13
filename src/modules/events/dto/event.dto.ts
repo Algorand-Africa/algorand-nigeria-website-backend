@@ -98,12 +98,12 @@ export class AllEventsQueryDto extends PaginationParams {
   @ApiProperty({ enum: EventCategory })
   @IsOptional()
   @IsEnum(EventCategory)
-  category: EventCategory;
+  category?: EventCategory;
 
   @ApiProperty({ enum: EventType })
   @IsOptional()
   @IsEnum(EventType)
-  type: EventType;
+  type?: EventType;
 
   @ApiProperty({ enum: DATE_PERIOD, default: DATE_PERIOD.ALL })
   @IsEnum(DATE_PERIOD)
@@ -147,9 +147,9 @@ export class CreateEventDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Matches(IMAGE_BASE64_REGEX, {
-    message: 'Image must be a base64 string',
-  })
+  // @Matches(IMAGE_BASE64_REGEX, {
+  //   message: 'Image must be a base64 string',
+  // })
   base64Image: string;
 
   @ApiProperty()

@@ -26,6 +26,7 @@ import { EventStatus, UserEventStatus } from '../constants/enums';
 import { isUUID } from 'class-validator';
 import { SendgridService } from 'src/modules/core/services/sendgrid/sendgrid.service';
 import { User } from 'src/dal/entities';
+import { SORT_ORDER } from 'src/modules/core/dto/page-options.dto';
 @Injectable()
 export class EventsService {
   constructor(
@@ -83,6 +84,8 @@ export class EventsService {
     if (search) {
       qb.andWhere('event.title ILIKE :search', { search: `%${search}%` });
     }
+
+    qb.orderBy('event.date', SORT_ORDER.DESC);
 
     qb.skip(skip).take(pageSize);
 
