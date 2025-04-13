@@ -43,6 +43,7 @@ import { convertToUrlFormat } from 'src/modules/core/utils/string';
 import { IMAGE_BASE64_REGEX } from 'src/modules/core/constants/base64-regex';
 import * as crypto from 'crypto';
 import { SendgridService } from 'src/modules/core/services/sendgrid/sendgrid.service';
+import { SORT_ORDER } from 'src/modules/core/dto/page-options.dto';
 @Injectable()
 export class AdminEventsService {
   constructor(
@@ -119,7 +120,7 @@ export class AdminEventsService {
       qb.andWhere('event.title ILIKE :search', { search: `%${search}%` });
     }
 
-    qb.offset(skip).limit(pageSize);
+    qb.orderBy('event.date', SORT_ORDER.DESC).offset(skip).limit(pageSize);
 
     const [data, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
 
