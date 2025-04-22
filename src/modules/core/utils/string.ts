@@ -46,7 +46,8 @@ export function convertToUrlFormat(inputString: string) {
     .replace(/[^\w\s-]/g, '')
     .replace(/\s+/g, '-');
 
-  return urlFriendlyString.toLowerCase();
+  // Remove multiple hyphens
+  return urlFriendlyString.replace(/-{2,}/g, '-');
 }
 
 /**
