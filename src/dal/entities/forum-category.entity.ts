@@ -9,16 +9,16 @@ export enum CategoryVisibility {
 
 @Entity('forum_categories')
 export class ForumCategory extends BaseEntity {
-  @Column({ length: 100 })
+  @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   description: string;
 
-  @Column({ length: 50, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   color: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   image: string;
 
   @Column({

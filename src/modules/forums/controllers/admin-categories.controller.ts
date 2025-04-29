@@ -26,10 +26,12 @@ import { CategoryDto } from '../dto/category.dto';
 import { RoleType } from 'src/modules/users/enums/role-type.enum';
 import { PaginationParams } from 'src/modules/core/dto/pagination-params.dto';
 import { PaginatedResponse } from 'src/modules/core/dto/paginated-response.dto';
+import { User } from 'src/modules/core/decorators/user.decorator';
+import { ObjectIdDto } from 'src/modules/core/dto/object-id.dto';
 
-@ApiTags('Categories management')
+@ApiTags('Forum Categories management')
 @ApiBearerAuth('Bearer')
-@Controller('admin/categories')
+@Controller('admin/forum-categories')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class AdminCategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
@@ -42,8 +44,11 @@ export class AdminCategoriesController {
   })
   @Roles(RoleType.SUPER_ADMIN)
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto): Promise<ForumCategory> {
-    return this.categoriesService.create(createCategoryDto);
+  create(
+    @Body() createCategoryDto: CreateCategoryDto,
+    @User() user: ObjectIdDto,
+  ): Promise<ForumCategory> {
+    return this.categoriesService.create(createCategoryDto, user.id);
   }
 
   @ApiOperation({ summary: 'Fetch all categories' })
@@ -88,7 +93,7 @@ export class AdminCategoriesController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
+  remove(@Param('id') id: string): Promise<{ message: string }> {
     return this.categoriesService.remove(id);
   }
 }

@@ -23,7 +23,10 @@ export class CategoriesService {
     private readonly fileUploadService: FileUploadService,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
+  async create(
+    createCategoryDto: CreateCategoryDto,
+    userId: string,
+  ): Promise<Category> {
     const slug = slugify(createCategoryDto.name);
 
     // Check if slug already exists
@@ -47,6 +50,7 @@ export class CategoriesService {
       ...createCategoryDto,
       image: image.image,
       slug,
+      creator_id: userId,
     });
 
     return this.categoriesRepository.save(category);
@@ -59,7 +63,7 @@ export class CategoriesService {
 
     const qb = this.categoriesRepository
       .createQueryBuilder('category')
-      .leftJoin('users', 'users', 'users.id = category.creator_id')
+      .leftJoin('users', 'users', 'users.id::text = category.creator_id')
       .select([
         'category.id as id',
         'category.name as name',
@@ -68,6 +72,7 @@ export class CategoriesService {
         'category.image as image',
         'category.slug as slug',
         'users.email as "createdBy"',
+        'category.visibility as visibility',
       ]);
 
     if (search) {
@@ -90,6 +95,7 @@ export class CategoriesService {
         image: category.image,
         slug: category.slug,
         createdBy: category.createdBy,
+        visibility: category.visibility,
       })),
       total,
       page,
@@ -100,7 +106,7 @@ export class CategoriesService {
   async findOne(id: string): Promise<CategoryDto> {
     const category = await this.categoriesRepository
       .createQueryBuilder('category')
-      .leftJoin('users', 'users', 'users.id = category.creator_id')
+      .leftJoin('users', 'users', 'users.id::text = category.creator_id')
       .select([
         'category.id as id',
         'category.name as name',
@@ -109,6 +115,7 @@ export class CategoriesService {
         'category.image as image',
         'users.email as "createdBy"',
         'category.slug as slug',
+        'category.visibility as visibility',
       ])
       .where('category.id = :id', { id })
       .getRawOne();
@@ -125,6 +132,7 @@ export class CategoriesService {
       image: category.image,
       slug: category.slug,
       createdBy: category.createdBy,
+      visibility: category.visibility,
     };
   }
 
@@ -157,10 +165,14 @@ export class CategoriesService {
     return this.categoriesRepository.save(category);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string): Promise<{ message: string }> {
     const category = await this.categoriesRepository.findOne({
       where: { id },
     });
     await this.categoriesRepository.remove(category);
+
+    return {
+      message: 'Category deleted successfully',
+    };
   }
 }

@@ -6,13 +6,13 @@ export class Comment extends BaseEntity {
   @Column({ type: 'varchar' })
   message: string;
 
-  @Column({ default: 0 })
+  @Column({ default: 0, type: 'int' })
   upvotes: number;
 
-  @Column({ default: 0 })
+  @Column({ default: 0, type: 'int' })
   downvotes: number;
 
-  @Column({ default: false })
+  @Column({ default: false, type: 'bool' })
   answered: boolean;
 
   @Column({ type: 'varchar' })
