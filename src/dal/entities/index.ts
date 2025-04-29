@@ -5,6 +5,8 @@ import { EventRegistration } from './event-registration.entity';
 import { CustomerEnquiry } from './customer-enquiry.entity';
 import { Multisig } from './multisig.entity';
 import { MultisigSession } from './multisig-session.entity';
+import { Comment } from './comment.entity';
+import { ForumCategory } from './forum-category.entity';
 
 export const entities = [
   Token,
@@ -14,6 +16,8 @@ export const entities = [
   CustomerEnquiry,
   Multisig,
   MultisigSession,
+  Comment,
+  ForumCategory,
 ];
 
 export { Token, User, Event, EventRegistration, CustomerEnquiry };
