@@ -9,7 +9,7 @@ import {
   UseGuards,
   Query,
 } from '@nestjs/common';
-import { CategoriesService } from '../services/categories.service';
+import { AdminCategoriesService as CategoriesService } from '../services/admin-categories.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 import { UpdateCategoryDto } from '../dto/update-category.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
@@ -22,7 +22,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { ForumCategory } from 'src/dal/entities/forum-category.entity';
-import { CategoryDto } from '../dto/category.dto';
+import { AdminCategoryDto as CategoryDto } from '../dto/category.dto';
 import { RoleType } from 'src/modules/users/enums/role-type.enum';
 import { PaginationParams } from 'src/modules/core/dto/pagination-params.dto';
 import { PaginatedResponse } from 'src/modules/core/dto/paginated-response.dto';

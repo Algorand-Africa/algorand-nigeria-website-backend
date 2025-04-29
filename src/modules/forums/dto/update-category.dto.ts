@@ -16,6 +16,10 @@ export class UpdateCategoryDto {
 
   @IsString()
   @IsOptional()
+  textColor?: string;
+
+  @IsString()
+  @IsOptional()
   image: string;
 
   @IsEnum(CategoryVisibility)

@@ -10,12 +10,12 @@ import { UpdateCategoryDto } from '../dto/update-category.dto';
 import { slugify } from '../../../utils/slugify';
 import { ForumCategory as Category } from 'src/dal/entities/forum-category.entity';
 import { FileUploadService } from 'src/modules/core';
-import { CategoryDto } from '../dto/category.dto';
+import { AdminCategoryDto as CategoryDto } from '../dto/category.dto';
 import { PaginationParams } from 'src/modules/core/dto/pagination-params.dto';
 import { PaginatedResponse } from 'src/modules/core/dto/paginated-response.dto';
 import { IMAGE_BASE64_REGEX } from 'src/modules/core/constants/base64-regex';
 @Injectable()
-export class CategoriesService {
+export class AdminCategoriesService {
   constructor(
     @InjectRepository(Category)
     private categoriesRepository: Repository<Category>,
@@ -48,6 +48,7 @@ export class CategoriesService {
 
     const category = this.categoriesRepository.create({
       ...createCategoryDto,
+      text_color: createCategoryDto.textColor,
       image: image.image,
       slug,
       creator_id: userId,
@@ -71,6 +72,7 @@ export class CategoriesService {
         'category.color as color',
         'category.image as image',
         'category.slug as slug',
+        'category.text_color as "textColor"',
         'users.email as "createdBy"',
         'category.visibility as visibility',
       ]);
@@ -96,6 +98,7 @@ export class CategoriesService {
         slug: category.slug,
         createdBy: category.createdBy,
         visibility: category.visibility,
+        textColor: category.textColor,
       })),
       total,
       page,
@@ -116,6 +119,7 @@ export class CategoriesService {
         'users.email as "createdBy"',
         'category.slug as slug',
         'category.visibility as visibility',
+        'category.text_color as "textColor"',
       ])
       .where('category.id = :id', { id })
       .getRawOne();
@@ -133,6 +137,7 @@ export class CategoriesService {
       slug: category.slug,
       createdBy: category.createdBy,
       visibility: category.visibility,
+      textColor: category.textColor,
     };
   }
 
@@ -150,7 +155,7 @@ export class CategoriesService {
 
     let existingImage = category.image;
 
-    const { image } = updateCategoryDto;
+    const { image, textColor } = updateCategoryDto;
 
     if (image && IMAGE_BASE64_REGEX.test(image)) {
       const uploadedImage = await this.fileUploadService.uploadToCloudinary(
@@ -161,7 +166,12 @@ export class CategoriesService {
       existingImage = uploadedImage.image;
     }
 
-    Object.assign(category, updateCategoryDto);
+    Object.assign(category, {
+      ...updateCategoryDto,
+      image: existingImage,
+      slug,
+      text_color: textColor,
+    });
     return this.categoriesRepository.save(category);
   }
 

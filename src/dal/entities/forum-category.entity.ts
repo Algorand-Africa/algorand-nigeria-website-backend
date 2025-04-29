@@ -19,6 +19,9 @@ export class ForumCategory extends BaseEntity {
   color: string;
 
   @Column({ type: 'varchar', nullable: true })
+  text_color: string;
+
+  @Column({ type: 'varchar', nullable: true })
   image: string;
 
   @Column({

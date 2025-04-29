@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CategoryVisibility } from 'src/dal/entities/forum-category.entity';
 
-export class CategoryDto {
+export class AdminCategoryDto {
   @ApiProperty()
   id: string;
 
@@ -10,11 +10,15 @@ export class CategoryDto {
 
   @ApiProperty()
   slug: string;
+
   @ApiProperty()
   description: string;
 
   @ApiProperty()
   color: string;
+
+  @ApiProperty()
+  textColor: string;
 
   @ApiProperty()
   image: string;
@@ -26,4 +30,30 @@ export class CategoryDto {
     enum: CategoryVisibility,
   })
   visibility: CategoryVisibility;
+}
+
+export class CategoryDto {
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  description: string;
+
+  @ApiProperty()
+  color: string;
+
+  @ApiProperty()
+  textColor: string;
+
+  @ApiProperty()
+  image: string;
+
+  @ApiProperty()
+  totalPosts: number;
 }
