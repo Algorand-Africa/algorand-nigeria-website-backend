@@ -1,5 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 import { CategoryVisibility } from 'src/dal/entities/forum-category.entity';
+import { PaginationParams } from 'src/modules/core/dto/pagination-params.dto';
 
 export class AdminCategoryDto {
   @ApiProperty()
@@ -56,4 +58,11 @@ export class CategoryDto {
 
   @ApiProperty()
   totalPosts: number;
+}
+
+export class AdminFetchPostsQueryDto extends PaginationParams {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  userId?: string;
 }

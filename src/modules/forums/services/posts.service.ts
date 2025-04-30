@@ -24,6 +24,7 @@ import { VoteType } from '../enum/vote-type.enum';
 import { isUUID } from 'class-validator';
 import { CommentDto, CreateCommentDto } from '../dto/comment.dto';
 import { cleanSqlString } from 'src/utils/clean-string';
+import { PostStatus } from '../enum/post-status.enum';
 
 @Injectable()
 export class PostsService {
@@ -143,7 +144,8 @@ export class PostsService {
             .subQuery()
             .select('COUNT(*)')
             .from(PostVote, 'pv')
-            .where('pv.post_id = p.id::text'),
+            .where('pv.post_id = p.id::text')
+            .andWhere(`pv.vote_type = '${VoteType.UPVOTE}'`),
         'numberOfUpVotes',
       )
       .addSelect(
@@ -156,7 +158,8 @@ export class PostsService {
             .orderBy('pm.created_at', 'ASC')
             .limit(1),
         'image',
-      );
+      )
+      .where('p.status != :status', { status: PostStatus.FLAGGED });
 
     if (userId) {
       qb.addSelect(
@@ -672,6 +675,7 @@ export class PostsService {
                     SELECT COUNT(*)
                     FROM ${this.commentVotesRepository.metadata.tableName} cv
                     WHERE cv.comment_id = c.id::text
+                    AND cv.vote_type = '${VoteType.UPVOTE}'
                 ) as "numberOfUpVotes"
                 ${
                   userId
@@ -715,6 +719,7 @@ export class PostsService {
               SELECT COUNT(*)
               FROM ${this.commentVotesRepository.metadata.tableName} cv
               WHERE cv.comment_id = c.id::text
+              AND cv.vote_type = '${VoteType.UPVOTE}'
             ) as "numberOfUpVotes"
             ${
               userId

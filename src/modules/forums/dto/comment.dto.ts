@@ -50,3 +50,35 @@ export class CreateCommentDto {
   @IsOptional()
   parentCommentId?: string;
 }
+
+export class AdminCommentDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  message: string;
+
+  @ApiProperty()
+  numberOfUpVotes: number;
+
+  @ApiProperty()
+  numberOfDownVotes: number;
+
+  @ApiProperty()
+  posterUsername: string;
+
+  @ApiProperty()
+  posterAvatar: string;
+
+  @ApiProperty()
+  posterEmail: string;
+
+  @ApiPropertyOptional()
+  parentId?: string;
+
+  @ApiPropertyOptional()
+  comments?: AdminCommentDto[];
+}

@@ -1,6 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PostStatus } from '../enum/post-status.enum';
-import { IsArray, IsNotEmpty, IsString, Matches } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  Matches,
+} from 'class-validator';
 import { IMAGE_BASE64_REGEX } from 'src/modules/core/constants/base64-regex';
 
 export class PostPreviewDto {
@@ -81,4 +87,52 @@ export class CreatePostDto {
     message: 'Invalid image',
   })
   images: string[];
+}
+
+export class AdminPostDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  title: string;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  numberOfComments: number;
+
+  @ApiProperty()
+  numberOfUpVotes: number;
+
+  @ApiProperty()
+  numberOfDownVotes: number;
+
+  @ApiProperty()
+  numberOfSaved: number;
+
+  @ApiProperty({ enum: PostStatus })
+  status: PostStatus;
+
+  @ApiProperty()
+  posterEmail: string;
+
+  @ApiProperty()
+  posterUsername: string;
+
+  @ApiProperty()
+  posterAvatar: string;
+
+  @ApiProperty()
+  images: string[];
+
+  @ApiProperty()
+  message: string;
+}
+
+export class UpdatePostStatusDto {
+  @ApiProperty({ enum: PostStatus })
+  @IsEnum(PostStatus)
+  @IsNotEmpty()
+  status: PostStatus;
 }

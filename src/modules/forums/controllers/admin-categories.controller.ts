@@ -22,12 +22,18 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { ForumCategory } from 'src/dal/entities/forum-category.entity';
-import { AdminCategoryDto as CategoryDto } from '../dto/category.dto';
+import {
+  AdminFetchPostsQueryDto,
+  AdminCategoryDto as CategoryDto,
+} from '../dto/category.dto';
 import { RoleType } from 'src/modules/users/enums/role-type.enum';
 import { PaginationParams } from 'src/modules/core/dto/pagination-params.dto';
 import { PaginatedResponse } from 'src/modules/core/dto/paginated-response.dto';
 import { User } from 'src/modules/core/decorators/user.decorator';
 import { ObjectIdDto } from 'src/modules/core/dto/object-id.dto';
+import { AdminPostDto, UpdatePostStatusDto } from '../dto/post.dto';
+import { AdminCommentDto } from '../dto/comment.dto';
+import { Post as PostEntity } from 'src/dal/entities';
 
 @ApiTags('Forum Categories management')
 @ApiBearerAuth('Bearer')
@@ -65,6 +71,33 @@ export class AdminCategoriesController {
     return this.categoriesService.findAll(options);
   }
 
+  @ApiOperation({ summary: 'Fetch posts under a category' })
+  @ApiResponse({
+    status: 200,
+    description: 'Posts fetched successfully',
+    type: AdminPostDto,
+  })
+  @Roles(RoleType.SUPER_ADMIN)
+  @Get(':id/posts')
+  fetchPosts(
+    @Param('id') id: string,
+    @Query() options: AdminFetchPostsQueryDto,
+  ): Promise<PaginatedResponse<AdminPostDto>> {
+    return this.categoriesService.fetchPosts(options, id);
+  }
+
+  @ApiOperation({ summary: 'Fetch comments under a post' })
+  @ApiResponse({
+    status: 200,
+    description: 'Comments fetched successfully',
+    type: AdminCommentDto,
+  })
+  @Roles(RoleType.SUPER_ADMIN)
+  @Get(':id/comments')
+  fetchComments(@Param('id') id: string): Promise<AdminCommentDto[]> {
+    return this.categoriesService.fetchComments(id);
+  }
+
   @ApiOperation({ summary: 'Fetch category by id' })
   @ApiResponse({
     status: 200,
@@ -75,6 +108,21 @@ export class AdminCategoriesController {
   @Get(':id')
   findOne(@Param('id') id: string): Promise<CategoryDto> {
     return this.categoriesService.findOne(id);
+  }
+
+  @ApiOperation({ summary: 'Update a post status' })
+  @ApiResponse({
+    status: 200,
+    description: 'The post status has been successfully updated.',
+    type: PostEntity,
+  })
+  @Roles(RoleType.SUPER_ADMIN)
+  @Patch(':postId/status')
+  updatePostStatus(
+    @Param('postId') postId: string,
+    @Body() updatePostStatusDto: UpdatePostStatusDto,
+  ): Promise<PostEntity> {
+    return this.categoriesService.updatePostStatus(postId, updatePostStatusDto);
   }
 
   @ApiOperation({ summary: 'Update a category' })
@@ -92,6 +140,25 @@ export class AdminCategoriesController {
     return this.categoriesService.update(id, updateCategoryDto);
   }
 
+  @ApiOperation({ summary: 'Delete a comment' })
+  @ApiResponse({
+    status: 200,
+    description: 'The comment has been successfully deleted.',
+  })
+  @Roles(RoleType.SUPER_ADMIN)
+  @Delete(':commentId')
+  deleteComment(
+    @Param('commentId') commentId: string,
+  ): Promise<{ message: string }> {
+    return this.categoriesService.deleteComment(commentId);
+  }
+
+  @ApiOperation({ summary: 'Delete a category' })
+  @ApiResponse({
+    status: 200,
+    description: 'The category has been successfully deleted.',
+  })
+  @Roles(RoleType.SUPER_ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string): Promise<{ message: string }> {
     return this.categoriesService.remove(id);
