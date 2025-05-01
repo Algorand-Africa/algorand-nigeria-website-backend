@@ -12,6 +12,7 @@ import { User } from 'src/dal/entities/user.entity';
 import { PostsController } from './controllers/posts.controller';
 import { PostsService } from './services/posts.service';
 import { SavedPost } from 'src/dal/entities';
+import { SocketGateway } from '../core/providers/socket.provider';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { SavedPost } from 'src/dal/entities';
     ]),
   ],
   controllers: [AdminCategoriesController, PostsController],
-  providers: [AdminCategoriesService, PostsService],
+  providers: [AdminCategoriesService, PostsService, SocketGateway],
   exports: [AdminCategoriesService, PostsService],
 })
 export class ForumsModule {}

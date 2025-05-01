@@ -108,7 +108,16 @@ export class AdminCategoriesService {
         'category.text_color as "textColor"',
         'users.email as "createdBy"',
         'category.visibility as visibility',
-      ]);
+      ])
+      .addSelect(
+        (qb) =>
+          qb
+            .subQuery()
+            .select('COUNT(*)')
+            .from(Post, 'p')
+            .where('p.category_id = category.id::text'),
+        'totalPosts',
+      );
 
     if (search) {
       qb.andWhere('category.name ILIKE :search', { search: `%${search}%` });
@@ -132,6 +141,7 @@ export class AdminCategoriesService {
         createdBy: category.createdBy,
         visibility: category.visibility,
         textColor: category.textColor,
+        totalPosts: parseInt(category.totalPosts),
       })),
       total,
       page,
@@ -154,6 +164,15 @@ export class AdminCategoriesService {
         'category.visibility as visibility',
         'category.text_color as "textColor"',
       ])
+      .addSelect(
+        (qb) =>
+          qb
+            .subQuery()
+            .select('COUNT(*)')
+            .from(Post, 'p')
+            .where('p.category_id = category.id::text'),
+        'totalPosts',
+      )
       .where('category.id = :id', { id })
       .getRawOne();
 
@@ -171,6 +190,7 @@ export class AdminCategoriesService {
       createdBy: category.createdBy,
       visibility: category.visibility,
       textColor: category.textColor,
+      totalPosts: parseInt(category.totalPosts),
     };
   }
 

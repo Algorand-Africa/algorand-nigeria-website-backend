@@ -31,6 +31,7 @@ import { CommentDto, CreateCommentDto } from '../dto/comment.dto';
 import { cleanSqlString } from 'src/utils/clean-string';
 import { PostStatus } from '../enum/post-status.enum';
 import { ImageData } from 'src/modules/core/services/file-upload/interface';
+import { SocketGateway } from 'src/modules/core/providers/socket.provider';
 
 @Injectable()
 export class PostsService {
@@ -65,6 +66,8 @@ export class PostsService {
     private readonly manager: EntityManager,
 
     private readonly fileUploadService: FileUploadService,
+
+    private readonly socketGateway: SocketGateway,
   ) {}
 
   async fetchAllCategories(
@@ -505,6 +508,11 @@ export class PostsService {
     const comment = parentCommentId
       ? await this.createReplyComment(message, parentCommentId, userId)
       : await this.createTopLevelComment(message, postId, userId);
+
+    this.socketGateway.emitEvent('comment-created', {
+      comment,
+      postId,
+    });
 
     return this.fetchComment(comment.id, userId);
   }

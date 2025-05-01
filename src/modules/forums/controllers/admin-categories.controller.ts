@@ -146,7 +146,7 @@ export class AdminCategoriesController {
     description: 'The comment has been successfully deleted.',
   })
   @Roles(RoleType.SUPER_ADMIN)
-  @Delete(':commentId')
+  @Delete(':commentId/comments')
   deleteComment(
     @Param('commentId') commentId: string,
   ): Promise<{ message: string }> {

@@ -32,6 +32,9 @@ export class AdminCategoryDto {
     enum: CategoryVisibility,
   })
   visibility: CategoryVisibility;
+
+  @ApiProperty()
+  totalPosts: number;
 }
 
 export class CategoryDto {
