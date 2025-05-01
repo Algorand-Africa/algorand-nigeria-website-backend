@@ -4,10 +4,12 @@ import {
   IsArray,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
 } from 'class-validator';
 import { IMAGE_BASE64_REGEX } from 'src/modules/core/constants/base64-regex';
+import { PaginationParams } from 'src/modules/core/dto/pagination-params.dto';
 
 export class PostPreviewDto {
   @ApiProperty()
@@ -135,4 +137,11 @@ export class UpdatePostStatusDto {
   @IsEnum(PostStatus)
   @IsNotEmpty()
   status: PostStatus;
+}
+
+export class FetchPostsQueryDto extends PaginationParams {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  categoryId?: string;
 }

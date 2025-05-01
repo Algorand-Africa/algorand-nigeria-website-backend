@@ -16,7 +16,12 @@ import {
 import { PostsService } from '../services/posts.service';
 import { CategoryDto } from '../dto/category.dto';
 import { PaginationParams } from 'src/modules/core/dto/pagination-params.dto';
-import { CreatePostDto, PostDto, PostPreviewDto } from '../dto/post.dto';
+import {
+  CreatePostDto,
+  FetchPostsQueryDto,
+  PostDto,
+  PostPreviewDto,
+} from '../dto/post.dto';
 import { OptionalJwtGuard } from 'src/modules/auth/guards/optional-jwt.guard';
 import { CurrentUser } from 'src/modules/auth/decorators';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
@@ -50,13 +55,12 @@ export class PostsController {
     description: 'All post previews fetched successfully',
     type: PostPreviewDto,
   })
-  @Get(':categoryId/previews')
+  @Get('posts/')
   fetchPostPreviews(
-    @Param('categoryId') categoryId: string,
-    @Query() options: PaginationParams,
+    @Query() options: FetchPostsQueryDto,
     @CurrentUser() user: { id: string },
   ): Promise<PaginatedResponse<PostPreviewDto>> {
-    return this.postsService.fetchPostPreviews(options, categoryId, user?.id);
+    return this.postsService.fetchPostPreviews(options, user?.id);
   }
 
   @UseGuards(OptionalJwtGuard())

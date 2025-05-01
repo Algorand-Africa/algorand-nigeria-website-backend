@@ -19,7 +19,12 @@ import { EntityManager, Repository } from 'typeorm';
 import { CategoryDto } from '../dto/category.dto';
 import { FileUploadService, PaginatedResponse } from 'src/modules/core';
 import { PaginationParams } from 'src/modules/core/dto/pagination-params.dto';
-import { CreatePostDto, PostDto, PostPreviewDto } from '../dto/post.dto';
+import {
+  CreatePostDto,
+  FetchPostsQueryDto,
+  PostDto,
+  PostPreviewDto,
+} from '../dto/post.dto';
 import { VoteType } from '../enum/vote-type.enum';
 import { isUUID } from 'class-validator';
 import { CommentDto, CreateCommentDto } from '../dto/comment.dto';
@@ -111,11 +116,10 @@ export class PostsService {
   }
 
   async fetchPostPreviews(
-    options: PaginationParams,
-    categoryId: string,
+    options: FetchPostsQueryDto,
     userId?: string,
   ): Promise<PaginatedResponse<PostPreviewDto>> {
-    const { page, pageSize, skip, search } = options;
+    const { page, pageSize, skip, search, categoryId } = options;
 
     const qb = this.postsRepository
       .createQueryBuilder('p')
