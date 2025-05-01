@@ -153,7 +153,19 @@ export class PostsService {
     options: FetchPostsQueryDto,
     userId?: string,
   ): Promise<PaginatedResponse<PostPreviewDto>> {
-    const { page, pageSize, skip, search, categoryId } = options;
+    const {
+      page,
+      pageSize,
+      skip,
+      search,
+      categoryId,
+      sortBy = 'createdAt',
+    } = options;
+
+    const sortByMap = {
+      createdAt: 'p.created_at',
+      numberOfComments: '"numberOfComments"',
+    };
 
     const qb = this.postsRepository
       .createQueryBuilder('p')
@@ -250,7 +262,12 @@ export class PostsService {
       qb.andWhere('p.title ILIKE :search', { search: `%${search}%` });
     }
 
-    qb.offset(skip).limit(pageSize).orderBy('p.created_at', 'DESC');
+    qb.offset(skip)
+      .limit(pageSize)
+      .orderBy(
+        sortByMap[sortBy],
+        sortBy === 'numberOfComments' ? 'DESC' : 'ASC',
+      );
 
     const [posts, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
 

@@ -144,4 +144,9 @@ export class FetchPostsQueryDto extends PaginationParams {
   @IsString()
   @IsOptional()
   categoryId?: string;
+
+  @ApiPropertyOptional({ enum: ['createdAt', 'numberOfComments'] })
+  @IsOptional()
+  @IsEnum(['createdAt', 'numberOfComments'])
+  sortBy?: 'createdAt' | 'numberOfComments';
 }
