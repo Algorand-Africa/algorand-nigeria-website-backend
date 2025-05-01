@@ -48,6 +48,18 @@ export class PostsController {
     return this.postsService.fetchAllCategories(options);
   }
 
+  @Public()
+  @ApiOperation({ summary: 'Fetch a single category by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Category fetched successfully',
+    type: CategoryDto,
+  })
+  @Get('categories/:id')
+  fetchSingleCategory(@Param('id') id: string): Promise<CategoryDto> {
+    return this.postsService.fetchSingleCategory(id);
+  }
+
   @UseGuards(OptionalJwtGuard())
   @ApiOperation({ summary: 'Fetch all post previews under a category' })
   @ApiResponse({

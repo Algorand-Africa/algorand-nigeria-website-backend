@@ -115,6 +115,39 @@ export class PostsService {
     );
   }
 
+  async fetchSingleCategory(categoryId: string): Promise<CategoryDto> {
+    const qb = this.categoriesRepository
+      .createQueryBuilder('c')
+      .select(['c.*'])
+      .addSelect(
+        (qb) =>
+          qb
+            .subQuery()
+            .select('COUNT(*)')
+            .from(Post, 'p')
+            .where('p.category_id = c.id::text'),
+        'totalPosts',
+      )
+      .where('c.slug = :categoryId OR c.id::text = :categoryId', {
+        categoryId,
+      })
+      .orderBy('c.created_at', 'DESC')
+      .groupBy('c.id');
+
+    const category = await qb.getRawOne();
+
+    return {
+      id: category.slug,
+      name: category.name,
+      description: category.description,
+      color: category.color,
+      textColor: category.text_color,
+      image: category.image,
+      totalPosts: parseInt(category.totalPosts),
+      createdAt: category.created_at,
+    };
+  }
+
   async fetchPostPreviews(
     options: FetchPostsQueryDto,
     userId?: string,
