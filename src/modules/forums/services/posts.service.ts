@@ -30,6 +30,7 @@ import { isUUID } from 'class-validator';
 import { CommentDto, CreateCommentDto } from '../dto/comment.dto';
 import { cleanSqlString } from 'src/utils/clean-string';
 import { PostStatus } from '../enum/post-status.enum';
+import { ImageData } from 'src/modules/core/services/file-upload/interface';
 
 @Injectable()
 export class PostsService {
@@ -450,16 +451,15 @@ export class PostsService {
       throw new NotFoundException('Category not found');
     }
 
-    const uploadedImages = [];
+    const uploadedImages: ImageData[] = [];
 
     if (images.length > 0) {
-      uploadedImages.push([
-        ...(await Promise.all(
-          images.map((image) =>
-            this.fileUploadService.uploadToCloudinary(image, null, 'posts'),
-          ),
-        )),
-      ]);
+      const uploadedData = await Promise.all(
+        images.map((image) =>
+          this.fileUploadService.uploadToCloudinary(image, null, 'posts'),
+        ),
+      );
+      uploadedImages.push(...uploadedData);
     }
 
     const post = await this.postsRepository.save({
