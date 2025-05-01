@@ -55,7 +55,7 @@ export class PostsController {
     description: 'All post previews fetched successfully',
     type: PostPreviewDto,
   })
-  @Get('posts/')
+  @Get('previews')
   fetchPostPreviews(
     @Query() options: FetchPostsQueryDto,
     @CurrentUser() user: { id: string },
