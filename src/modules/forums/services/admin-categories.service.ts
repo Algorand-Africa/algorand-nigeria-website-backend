@@ -369,7 +369,13 @@ export class AdminCategoriesService {
     }
 
     post.status = updatePostStatusDto.status;
-    return this.postsRepository.save(post);
+    const res = await this.postsRepository.save(post);
+
+    this.socketGateway.emitEvent('post-updated', {
+      postId: postId,
+    });
+
+    return res;
   }
 
   async deleteComment(commentId: string): Promise<{ message: string }> {
