@@ -265,12 +265,7 @@ export class PostsService {
       qb.andWhere('p.title ILIKE :search', { search: `%${search}%` });
     }
 
-    qb.offset(skip)
-      .limit(pageSize)
-      .orderBy(
-        sortByMap[sortBy],
-        sortBy === 'numberOfComments' ? 'DESC' : 'ASC',
-      );
+    qb.offset(skip).limit(pageSize).orderBy(sortByMap[sortBy], 'DESC');
 
     const [posts, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
 
