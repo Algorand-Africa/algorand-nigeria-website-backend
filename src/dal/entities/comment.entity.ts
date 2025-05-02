@@ -1,8 +1,8 @@
 import { Entity, Column } from 'typeorm';
-import { BaseEntity } from './base.entity';
+import { SoftDeletableEntity } from './soft-deletable.entity';
 
 @Entity('comments')
-export class Comment extends BaseEntity {
+export class Comment extends SoftDeletableEntity {
   @Column({ type: 'varchar' })
   message: string;
 

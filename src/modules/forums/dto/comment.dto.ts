@@ -32,6 +32,9 @@ export class CommentDto {
 
   @ApiPropertyOptional()
   comments?: CommentDto[];
+
+  @ApiProperty()
+  deleted: boolean;
 }
 
 export class CreateCommentDto {
@@ -81,4 +84,7 @@ export class AdminCommentDto {
 
   @ApiPropertyOptional()
   comments?: AdminCommentDto[];
+
+  @ApiProperty()
+  deleted: boolean;
 }

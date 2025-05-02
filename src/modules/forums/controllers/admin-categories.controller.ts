@@ -153,6 +153,19 @@ export class AdminCategoriesController {
     return this.categoriesService.deleteComment(commentId);
   }
 
+  @ApiOperation({ summary: 'Restore a comment' })
+  @ApiResponse({
+    status: 200,
+    description: 'The comment has been successfully restored.',
+  })
+  @Roles(RoleType.SUPER_ADMIN)
+  @Patch(':commentId/comments/restore')
+  restoreComment(
+    @Param('commentId') commentId: string,
+  ): Promise<{ message: string }> {
+    return this.categoriesService.restoreComment(commentId);
+  }
+
   @ApiOperation({ summary: 'Delete a category' })
   @ApiResponse({
     status: 200,

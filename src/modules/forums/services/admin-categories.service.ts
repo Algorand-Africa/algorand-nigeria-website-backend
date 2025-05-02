@@ -31,6 +31,7 @@ import {
 import { VoteType } from '../enum/vote-type.enum';
 import { AdminCommentDto } from '../dto/comment.dto';
 import { cleanSqlString } from 'src/utils/clean-string';
+import { SocketGateway } from 'src/modules/core/providers/socket.provider';
 
 @Injectable()
 export class AdminCategoriesService {
@@ -54,6 +55,8 @@ export class AdminCategoriesService {
 
     @InjectEntityManager()
     private readonly manager: EntityManager,
+
+    private readonly socketGateway: SocketGateway,
   ) {}
 
   async create(
@@ -378,11 +381,37 @@ export class AdminCategoriesService {
       throw new NotFoundException(`Comment with ID "${commentId}" not found`);
     }
 
-    await this.commentsRepository.remove(comment);
+    await this.commentsRepository.update(comment.id, {
+      deleted_at: new Date(),
+    });
+
+    this.socketGateway.emitEvent('post-updated', {
+      postId: comment.post_id,
+    });
 
     return {
       message: 'Comment deleted successfully',
     };
+  }
+
+  async restoreComment(commentId: string): Promise<{ message: string }> {
+    const comment = await this.commentsRepository.findOne({
+      where: { id: commentId },
+    });
+
+    if (!comment) {
+      throw new NotFoundException(`Comment with ID "${commentId}" not found`);
+    }
+
+    await this.commentsRepository.update(commentId, {
+      deleted_at: null,
+    });
+
+    this.socketGateway.emitEvent('post-updated', {
+      postId: comment.post_id,
+    });
+
+    return { message: 'Comment restored successfully' };
   }
 
   private async getRawComments(postId: string): Promise<AdminCommentDto[]> {
@@ -393,6 +422,7 @@ export class AdminCategoriesService {
                 c.created_at as "createdAt",
                 c.message as message,
                 c.parent_id as "parentId",
+                c.deleted_at as "deletedAt",
                 u.username as "posterUsername",
                 u.profile_picture_url as "posterAvatar",
                 u.email as "posterEmail",
@@ -428,6 +458,7 @@ export class AdminCategoriesService {
             c.created_at as "createdAt",
             c.message as message,
             c.parent_id as "parentId",
+            c.deleted_at as "deletedAt",
             u.username as "posterUsername",
             u.profile_picture_url as "posterAvatar",
             u.email as "posterEmail",
@@ -462,6 +493,7 @@ export class AdminCategoriesService {
       numberOfUpVotes: parseInt(c.numberOfUpVotes),
       numberOfDownVotes: parseInt(c.numberOfDownVotes),
       posterEmail: c.posterEmail,
+      deleted: c.deletedAt !== null,
     }));
   }
 

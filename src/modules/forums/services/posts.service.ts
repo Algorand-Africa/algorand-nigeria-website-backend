@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import {
   Comment,
@@ -400,8 +395,10 @@ export class PostsService {
         'c.id as id',
         'c.created_at as "createdAt"',
         'c.message as message',
+        'c.parent_id as "parentId"',
         'u.username as "posterUsername"',
         'u.profile_picture_url as "posterAvatar"',
+        'c.deleted_at as "deletedAt"',
       ])
       .leftJoin(User, 'u', 'u.id::text = c.commenter_id')
       .addSelect(
@@ -431,13 +428,17 @@ export class PostsService {
       }
     }
 
+    const isDeleted = comment.deletedAt !== null;
+
     return {
       id: comment.id,
       createdAt: comment.created_at,
-      message: comment.message,
-      posterUsername: comment.posterUsername,
-      posterAvatar: comment.posterAvatar,
-      numberOfUpVotes: parseInt(comment.numberOfUpVotes),
+      deleted: isDeleted,
+      message: isDeleted ? '' : comment.message,
+      parentId: comment.parentId,
+      posterUsername: isDeleted ? '' : comment.posterUsername,
+      posterAvatar: isDeleted ? '' : comment.posterAvatar,
+      numberOfUpVotes: isDeleted ? 0 : parseInt(comment.numberOfUpVotes),
       upVoted,
       downVoted,
     };
@@ -504,8 +505,7 @@ export class PostsService {
       ? await this.createReplyComment(message, parentCommentId, userId)
       : await this.createTopLevelComment(message, postId, userId);
 
-    this.socketGateway.emitEvent('comment-created', {
-      comment,
+    this.socketGateway.emitEvent('post-updated', {
       postId,
     });
 
@@ -545,6 +545,11 @@ export class PostsService {
       voter_id: userId,
       vote_type: VoteType.UPVOTE,
     });
+
+    this.socketGateway.emitEvent('post-updated', {
+      postId,
+    });
+
     return { message: 'Post upvoted successfully' };
   }
 
@@ -581,6 +586,11 @@ export class PostsService {
       voter_id: userId,
       vote_type: VoteType.DOWNVOTE,
     });
+
+    this.socketGateway.emitEvent('post-updated', {
+      postId,
+    });
+
     return { message: 'Post downvoted successfully' };
   }
 
@@ -617,6 +627,10 @@ export class PostsService {
       voter_id: userId,
       vote_type: VoteType.UPVOTE,
     });
+
+    this.socketGateway.emitEvent('post-updated', {
+      postId: comment.post_id,
+    });
     return { message: 'Comment upvoted successfully' };
   }
 
@@ -652,6 +666,9 @@ export class PostsService {
       comment_id: commentId,
       voter_id: userId,
       vote_type: VoteType.DOWNVOTE,
+    });
+    this.socketGateway.emitEvent('post-updated', {
+      postId: comment.post_id,
     });
     return { message: 'Comment downvoted successfully' };
   }
@@ -724,6 +741,7 @@ export class PostsService {
             SELECT
                 c.id as id,
                 c.created_at as "createdAt",
+                c.deleted_at as "deletedAt",
                 c.message as message,
                 c.parent_id as "parentId",
                 u.username as "posterUsername",
@@ -768,6 +786,7 @@ export class PostsService {
           SELECT
             c.id as id,
             c.created_at as "createdAt",
+            c.deleted_at as "deletedAt",
             c.message as message,
             c.parent_id as "parentId",
             u.username as "posterUsername",
@@ -803,17 +822,22 @@ export class PostsService {
         SELECT * FROM comment_tree ORDER BY path;
     `);
 
-    return comments.map((c) => ({
-      id: c.id,
-      createdAt: c.createdAt,
-      message: c.message,
-      posterUsername: c.posterUsername,
-      posterAvatar: c.posterAvatar,
-      parentId: c.parentId,
-      numberOfUpVotes: parseInt(c.numberOfUpVotes),
-      upVoted: Boolean(Number(c.upVoted) > 0),
-      downVoted: Boolean(Number(c.downVoted) > 0),
-    }));
+    return comments.map((c) => {
+      const isDeleted = c.deletedAt !== null;
+
+      return {
+        id: c.id,
+        createdAt: c.createdAt,
+        deleted: isDeleted,
+        message: isDeleted ? '' : c.message,
+        posterUsername: isDeleted ? '' : c.posterUsername,
+        posterAvatar: isDeleted ? '' : c.posterAvatar,
+        parentId: c.parentId,
+        numberOfUpVotes: isDeleted ? 0 : parseInt(c.numberOfUpVotes),
+        upVoted: isDeleted ? false : Boolean(Number(c.upVoted) > 0),
+        downVoted: isDeleted ? false : Boolean(Number(c.downVoted) > 0),
+      };
+    });
   }
 
   private buildCommentTree(comments: CommentDto[]): CommentDto[] {
